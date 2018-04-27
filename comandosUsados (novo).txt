@@ -1,0 +1,101 @@
+
+#carregando o pacote Bibliometrix
+library(bibliometrix)
+
+#Lendo o arquivo exportado da plataforma Scopus para o vetor dados
+dados = readFiles(file.choose())
+
+#Convertendo para um data frame
+artigos = convert2df(dados, dbsource = "scopus", format = "bibtex")
+
+
+
+###########################
+#analisando os dados
+##########################
+resultado = biblioAnalysis(artigos, sep = ";")
+
+#resumo dos resultados
+resumo = summary(object = resultado, k = 10, pause = TRUE)
+
+###########################
+#PUBLICAÇÕES POR ANO
+##########################
+#OBS: o arquivo csv foi criado previamente
+artigosPorAno =  read.csv(file.choose(), header =T, sep=";")
+caminhoResultado = "/media/cristiano/892c22ef-2167-47e3-ba00-437ea3761bb1/Mestrado/35 - Artigo Godet/resultados"
+grafico = paste(caminhoResultado, "pubAno.jpg", sep = "/")
+jpeg(filename = grafico)
+barplot(artigosPorAno$Nº.de.Artigos, main="Publicações por Ano", names.arg = artigosPorAno$Ano, col = "blue")
+dev.off()
+
+
+###########################
+#MAPA
+##########################
+#OBS: o arquivo csv foi criado previamente
+library(rworldmap)
+paises = read.csv(file.choose(), header =T, sep=";")
+d <- data.frame(country=paises$País,value=paises$Nº.de.Artigos)
+n <- joinCountryData2Map(d, joinCode="NAME", nameJoinColumn="country")
+
+
+grafico = paste(caminhoResultado, "paises.jpg", sep = "/")
+jpeg(filename = grafico)
+mapa = mapCountryData(n, nameColumnToPlot="value", mapTitle="Publicações por Países", catMethod="categorical", colourPalette=c('green','yellow','red'), addLegend = 'false')
+do.call( addMapLegendBoxes, c(mapa,title="Nº de publicações",x='bottom',horiz=TRUE))
+dev.off()
+
+
+###########################
+#FREQUÊNCIA DE PALAVRAS
+##########################
+#FONTE: https://pt.stackoverflow.com/questions/51448/saber-a-frequ%C3%AAncia-de-palavras
+
+
+texto <- scan(file.choose(), what="char", sep="\n", encoding = "UTF-8")
+texto <- tolower(texto)
+
+lista_palavras <- strsplit(texto, "\\W+")
+vetor_palavras <- unlist(lista_palavras)
+
+frequencia_palavras <- table(vetor_palavras)
+frequencia_ordenada_palavras <- sort(frequencia_palavras, decreasing=TRUE)
+
+palavras <- paste(names(frequencia_ordenada_palavras), frequencia_ordenada_palavras, sep=";")
+
+cat("Palavra;Frequencia", palavras, file=file.choose(), sep="\n") 
+
+
+
+
+###########################
+#wordcloud
+##########################
+#OBS: o arquivo csv foi criado previamente
+library(wordcloud)
+nuvem = read.csv(file.choose(), header =T, sep=";")
+head(nuvem)
+
+
+wordcloud(words = nuvem$Palavra, freq = nuvem$Frequencia)
+
+
+words = paste(caminhoResultado, "wordcloud.jpg", sep = "/")
+jpeg(filename = words)
+wordcloud(words = nuvem$Palavra, freq = nuvem$Frequencia,min.freq = 1, random.order = TRUE,
+colors=brewer.pal(8,"Dark2"), use.r.layout=TRUE, rot.per= 0.5)
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
