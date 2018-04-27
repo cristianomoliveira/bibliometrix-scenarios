@@ -23,7 +23,7 @@ resumo = summary(object = resultado, k = 10, pause = TRUE)
 ##########################
 #OBS: o arquivo csv foi criado previamente
 artigosPorAno =  read.csv(file.choose(), header =T, sep=";")
-caminhoResultado = "/media/cristiano/892c22ef-2167-47e3-ba00-437ea3761bb1/Mestrado/35 - Artigo Godet/resultados"
+caminhoResultado = "endereço completo"
 grafico = paste(caminhoResultado, "pubAno.jpg", sep = "/")
 jpeg(filename = grafico)
 barplot(artigosPorAno$Nº.de.Artigos, main="Publicações por Ano", names.arg = artigosPorAno$Ano, col = "blue")
